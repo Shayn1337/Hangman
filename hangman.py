@@ -37,25 +37,30 @@ class StartGame(tk.Frame):
 #            global word_with_space
 #            global length
 #            length = 0
-        word=[]
-        wordlist = open('word_list','r')
-        for line in wordlist:
-            word.append(line.strip().split(","))
-        wordlist.close()
+        def generateword():
+            global rndword
+            word=[]
+            wordlist = open('word_list','r')
+            for line in wordlist:
+                word.append(line.strip().split(","))
+            wordlist.close()
+            rndword = random.choice(word)
+            button['text'] = rndword
 
-
-        rndword = random.choice(word)
-
+        
+        #tk.Button(self, text=rndword, width=90, command=generateword).grid(columnspan=9)
+        button = tk.Button(self, text="Generiere ein Word!", width=90, command=generateword)
+        button.grid(columnspan=9)
 
 
         #Erstellung Tastatur
         n=0
         for c in ascii_uppercase:
-            tk.Button(self, text=c, width=10).grid(row=1+n//9, column=n%9)
+            tk.Button(self, text=c, width=10).grid(row=2+n//9, column=n%9)
             n+=1
-        tk.Button(self, text="Neues Spiel", width=10).grid(row=3, column=8)
+        tk.Button(self, text="Neues Spiel", width=10).grid(row=4, column=8)
         tk.Button(self, text="Zurück zum Menu", width=90, command=lambda: master.switch_frame(StartPage)).grid(columnspan=9)
-        tk.Button(self, text=rndword, width=90, command=lambda: master.switch_frame(StartGame)).grid(columnspan=9)
+
 #Option Frame
 class Options(tk.Frame):
     def __init__(self, master):
