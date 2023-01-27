@@ -34,31 +34,44 @@ class StartGame(tk.Frame):
         #hier muss das Spiel rein:
 
 #        def newGame():
-#            global word_with_space
-#            global length
-#            length = 0
+
+
+
         def generateword():
+            global word_with_space
+            global length
             global rndword
+            length = 0
+
             word=[]
             wordlist = open('word_list','r')
             for line in wordlist:
                 word.append(line.strip().split(","))
             wordlist.close()
-            rndword = random.choice(word)
-            button['text'] = rndword
+            rndword = (random.choice(word))
+            rndword = rndword[0]
+            line_word = rndword.upper()
+            for c in ascii_uppercase:
+                line_word = line_word.replace(c, "_")
+            line_word = " ".join(line_word)
+            rndword = " ".join(rndword)
+            button['text'] = line_word
+            Label['text'] = rndword
+            
 
-        
-        #tk.Button(self, text=rndword, width=90, command=generateword).grid(columnspan=9)
+
+        Label = tk.Label(self, text="Generiere ein Word!", width=90)
         button = tk.Button(self, text="Generiere ein Word!", width=90, command=generateword)
+        Label.grid(columnspan=9)
         button.grid(columnspan=9)
 
 
         #Erstellung Tastatur
         n=0
         for c in ascii_uppercase:
-            tk.Button(self, text=c, width=10).grid(row=2+n//9, column=n%9)
+            tk.Button(self, text=c, width=10).grid(row=3+n//9, column=n%9)
             n+=1
-        tk.Button(self, text="Neues Spiel", width=10).grid(row=4, column=8)
+        tk.Button(self, text="Neues Spiel", width=10).grid(row=5, column=8)
         tk.Button(self, text="Zurück zum Menu", width=90, command=lambda: master.switch_frame(StartPage)).grid(columnspan=9)
 
 #Option Frame
