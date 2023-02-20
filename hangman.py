@@ -41,7 +41,10 @@ class StartGame(tk.Frame):
             global word_with_space
             global length
             global rndword
+            global line_word
+            global life
             length = 0
+            life = 12
 
             word=[]
             wordlist = open('word_list','r')
@@ -55,30 +58,55 @@ class StartGame(tk.Frame):
                 line_word = line_word.replace(c, "_")
             line_word = " ".join(line_word)
             rndword = " ".join(rndword)
-            button['text'] = line_word
-            Label['text'] = rndword
+            LabelLife['text'] = ("verbleibende Leben: {}".format(life))
+            Label['text'] = line_word
+
+
+        def guess(select_letter):
+            select_letter = select_letter.lower()
+            global rndword
+            global line_word
+            global life
+            if(rndword.lower().count(select_letter) > 0):
+                for x in range(rndword.lower().count(select_letter)):
+                    line_word = line_word[:rndword.lower().find(select_letter)] + rndword[rndword.lower().find(select_letter)] + line_word[(rndword.lower().find(select_letter)+1):]
+                    rndword = rndword[:rndword.lower().find(select_letter)] + "-" + rndword[(rndword.lower().find(select_letter)+1):]
+                if line_word.count("_") < 1:
+                    line_word = ("Glückwunsch das Wort ist richtig: \n {}".format(line_word))
+            else:
+                life-=1
+                if life < 1 :
+                    line_word = "Bitte probier es erneut"
             
+            
+            LabelLife['text'] = ("verbleibende Leben: {}".format(life))
+            Label['text'] = line_word
 
 
-        Label = tk.Label(self, text="Generiere ein Word!", width=90)
-        button = tk.Button(self, text="Generiere ein Word!", width=90, command=generateword)
+
+
+
+
+
+        Label = tk.Label(self, text="Generiere ein Word!", font=10, width=90)
+        LabelLife = tk.Label(self, text="Drücke neues Spiel um ein Spiel zu starten", font=10, width=90)
         Label.grid(columnspan=9)
-        button.grid(columnspan=9)
+        LabelLife.grid(columnspan=9)
 
 
         #Erstellung Tastatur
         n=0
         for c in ascii_uppercase:
-            tk.Button(self, text=c, width=10).grid(row=3+n//9, column=n%9)
+            tk.Button(self, text=c, width=10, command=lambda c=c: guess(c)).grid(row=3+n//9, column=n%9)
             n+=1
-        tk.Button(self, text="Neues Spiel", width=10).grid(row=5, column=8)
+        tk.Button(self, text="Neues Spiel", width=10, command=generateword).grid(row=5, column=8)
         tk.Button(self, text="Zurück zum Menu", width=90, command=lambda: master.switch_frame(StartPage)).grid(columnspan=9)
 
 #Option Frame
 class Options(tk.Frame):
     def __init__(self, master):
         tk.Frame.__init__(self, master)
-        tk.Frame.configure(self,bg='red')
+        tk.Frame.configure(self)
         tk.Label(self, text="Optionen").pack()
         tk.Button(self, text="Zurück zum Menu", command=lambda: master.switch_frame(StartPage)).pack()
 
