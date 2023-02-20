@@ -36,10 +36,10 @@ class StartPage(tk.Frame):
     def __init__ (self, master):
         tk.Frame.__init__(self, master)
         tk.Label(self, text="Hauptmenu").pack()
-        tk.Button(self, text="Spiel Starten", command=lambda: master.switch_frame(StartGame)).pack()
-        tk.Button(self, text="Optionen", command=lambda: master.switch_frame(Options)).pack()
-        tk.Button(self, text="Highscore", command=lambda: master.switch_frame(Highscore)).pack()
-        tk.Button(self, text="Schliessen", command=self.quit).pack()
+        tk.Button(self, text="Spiel Starten", command=lambda: master.switch_frame(StartGame) ,width='10').pack()
+        tk.Button(self, text="Optionen", command=lambda: master.switch_frame(Options) ,width='10').pack()
+        tk.Button(self, text="Highscore", command=lambda: master.switch_frame(Highscore), width='10').pack()
+        tk.Button(self, text="Schliessen", command=self.quit, width='10').pack()
 
 #Spiel Frame
 class StartGame(tk.Frame):
