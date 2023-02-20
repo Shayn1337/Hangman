@@ -1,6 +1,22 @@
 import tkinter as tk
 from string import ascii_uppercase
 import random
+import json
+
+with open('config.json', 'r') as f:
+    config = json.load(f)
+
+configvar = ["language","win","loss"]
+
+for f in configvar:
+    if f not in config:
+        config[f] = 0
+with open('config.json', 'w') as f:
+    json.dump(config, f)
+
+
+
+
 
 class App(tk.Tk):
     def __init__ (self):
@@ -22,6 +38,7 @@ class StartPage(tk.Frame):
         tk.Label(self, text="Hauptmenu").pack()
         tk.Button(self, text="Spiel Starten", command=lambda: master.switch_frame(StartGame)).pack()
         tk.Button(self, text="Optionen", command=lambda: master.switch_frame(Options)).pack()
+        tk.Button(self, text="Highscore", command=lambda: master.switch_frame(Highscore)).pack()
         tk.Button(self, text="Schliessen", command=self.quit).pack()
 
 #Spiel Frame
@@ -46,8 +63,17 @@ class StartGame(tk.Frame):
             length = 0
             life = 12
 
+            if config['language'] == 1:
+                wordlist="word_list_d"
+            elif config['language'] == 2:
+                wordlist="word_list_e"
+            else:
+                wordlist="word_list_d"
+
+            
+
             word=[]
-            wordlist = open('word_list','r')
+            wordlist = open(wordlist,'r')
             for line in wordlist:
                 word.append(line.strip().split(","))
             wordlist.close()
@@ -73,26 +99,26 @@ class StartGame(tk.Frame):
                     rndword = rndword[:rndword.lower().find(select_letter)] + "-" + rndword[(rndword.lower().find(select_letter)+1):]
                 if line_word.count("_") < 1:
                     line_word = ("Glückwunsch das Wort ist richtig: \n {}".format(line_word))
+                    config['win'] += 1
+                    with open('config.json', 'w') as f:
+                        json.dump(config, f)
             else:
                 life-=1
                 if life < 1 :
                     line_word = "Bitte probier es erneut"
+                    config['loss'] += 1
+                    with open('config.json', 'w') as f:
+                        json.dump(config, f)
             
             
             LabelLife['text'] = ("verbleibende Leben: {}".format(life))
             Label['text'] = line_word
 
 
-
-
-
-
-
         Label = tk.Label(self, text="Generiere ein Word!", font=10, width=90)
-        LabelLife = tk.Label(self, text="Drücke neues Spiel um ein Spiel zu starten", font=10, width=90)
+        LabelLife = tk.Label(self, text="Drücke Neues Spiel um ein Spiel zu starten", font=10, width=90)
         Label.grid(columnspan=9)
         LabelLife.grid(columnspan=9)
-
 
         #Erstellung Tastatur
         n=0
@@ -105,11 +131,36 @@ class StartGame(tk.Frame):
 #Option Frame
 class Options(tk.Frame):
     def __init__(self, master):
+
+        def language(number):
+            config['language'] = number
+            with open('config.json', 'w') as f:
+                json.dump(config, f)
+
         tk.Frame.__init__(self, master)
         tk.Frame.configure(self)
-        tk.Label(self, text="Optionen").pack()
-        tk.Button(self, text="Zurück zum Menu", command=lambda: master.switch_frame(StartPage)).pack()
+        tk.Label(self, text="Optionen").grid(columnspan=3)
+        tk.Label(self, text="Sprache:").grid(row=1, column=1)
+        tk.Button(self, text="Deutsch", command=lambda c=1: language(c)).grid(row=1, column=2)
+        tk.Button(self, text="Englisch", command=lambda c=2: language(c)).grid(row=1, column=3)
+        tk.Button(self, text="Zurück zum Menu", command=lambda: master.switch_frame(StartPage)).grid(row=2, column=1, columnspan=2)
+        tk.Button(self, text="Spiel Starten", command=lambda: master.switch_frame(StartGame)).grid(row=2, column=3)
 
+#Highscore Frame
+class Highscore(tk.Frame):
+    def __init__(self, master):
+
+        win_loss_rate = (config['win']/(config['win']+config['loss']))
+        tk.Frame.__init__(self, master)
+        tk.Frame.configure(self)
+        tk.Label(self, text="Highscore", width='20').grid(column=1, columnspan=2, pady=15)
+        tk.Label(self, text="Siege", width='10', anchor="w").grid(row=2, column=1)
+        tk.Label(self, text=config['win'], width='10').grid(row=2, column=2)
+        tk.Label(self, text="Niederlagen", width='10', anchor="w").grid(row=3, column=1)
+        tk.Label(self, text=config['loss'], width='10').grid(row=3, column=2)
+        tk.Label(self, text="W/L Rate", width='10', anchor="w").grid(row=4, column=1)
+        tk.Label(self, text=win_loss_rate, width='10').grid(row=4, column=2)
+        tk.Button(self, text="Zurück zum Menu",  width='20', command=lambda: master.switch_frame(StartPage)).grid(row=5, column=1, columnspan=2)
 
 if __name__ == "__main__":
     app = App()
