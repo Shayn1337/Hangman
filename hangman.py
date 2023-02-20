@@ -3,7 +3,7 @@ from string import ascii_uppercase
 import random
 import json
 
-with open('config.json', 'r') as f:
+with open('config', 'r') as f:
     config = json.load(f)
 
 configvar = ["language","win","loss"]
@@ -11,7 +11,7 @@ configvar = ["language","win","loss"]
 for f in configvar:
     if f not in config:
         config[f] = 0
-with open('config.json', 'w') as f:
+with open('config', 'w') as f:
     json.dump(config, f)
 
 
@@ -100,14 +100,14 @@ class StartGame(tk.Frame):
                 if line_word.count("_") < 1:
                     line_word = ("Glückwunsch das Wort ist richtig: \n {}".format(line_word))
                     config['win'] += 1
-                    with open('config.json', 'w') as f:
+                    with open('config', 'w') as f:
                         json.dump(config, f)
             else:
                 life-=1
                 if life < 1 :
                     line_word = "Bitte probier es erneut"
                     config['loss'] += 1
-                    with open('config.json', 'w') as f:
+                    with open('config', 'w') as f:
                         json.dump(config, f)
             
             
@@ -134,7 +134,7 @@ class Options(tk.Frame):
 
         def language(number):
             config['language'] = number
-            with open('config.json', 'w') as f:
+            with open('config', 'w') as f:
                 json.dump(config, f)
 
         tk.Frame.__init__(self, master)
@@ -150,7 +150,7 @@ class Options(tk.Frame):
 class Highscore(tk.Frame):
     def __init__(self, master):
 
-        win_loss_rate = (config['win']/(config['win']+config['loss']))
+        win_loss_rate = round((config['win']/(config['win']+config['loss'])),2)
         tk.Frame.__init__(self, master)
         tk.Frame.configure(self)
         tk.Label(self, text="Highscore", width='20').grid(column=1, columnspan=2, pady=15)
